@@ -47,7 +47,7 @@ void Test2()
 	puts("-----------------Test2------------------------" );
 	// POST using high-level request interface
 
-	const char* headers[] = 
+	const char* headers[] =
 	{
 		"Connection", "close",
 		"Content-type", "application/x-www-form-urlencoded",
@@ -56,7 +56,7 @@ void Test2()
 	};
 
 	const char* body = "answer=42&name=Bubba";
-	
+
 	happyhttp::Connection conn( "www.scumways.com", 80 );
 	conn.setcallbacks( OnBegin, OnData, OnComplete, 0 );
 	conn.request( "POST",
@@ -117,13 +117,10 @@ int main( int argc, char* argv[] )
 	{
 		fprintf(stderr, "Exception:\n%s\n", e.what() );
 	}
-	
+
 #ifdef WIN32
     WSACleanup();
 #endif // WIN32
 
 	return 0;
 }
-
-
-
