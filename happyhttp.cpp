@@ -34,6 +34,9 @@
 	#include <arpa/inet.h>
 	#include <netdb.h>	// for gethostbyname()
 	#include <errno.h>
+    #include <unistd.h>
+
+    #define _stricmp strcasecmp
 #else
 	#include <WinSock2.h>
 	#define vsnprintf _vsnprintf
@@ -48,11 +51,6 @@
 #include <vector>
 #include <string>
 #include <algorithm>
-
-#ifdef __APPLE__
-	#define _stricmp strcasecmp
-#endif
-
 
 using namespace std;
 
@@ -427,8 +425,7 @@ void Connection::send( const unsigned char* buf, int numbytes )
 	}
 }
 
-
-void Connection::pump()
+    void Connection::pump(int milisec)
 {
 	if( m_Outstanding.empty() )
 		return;		// no requests outstanding
@@ -934,5 +931,6 @@ bool Response::CheckClose()
 
 
 }	// end namespace happyhttp
+
 
 
