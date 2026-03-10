@@ -35,6 +35,7 @@
 	#include <netdb.h>	// for gethostbyname()
 	#include <errno.h>
     #include <unistd.h>
+    #include <poll.h>
 
     #define _stricmp strcasecmp
 #else
@@ -149,6 +150,7 @@ const char* GetWinsockErrorString( int err )
 // return true if socket has data waiting to be read
 bool datawaiting( int sock )
 {
+#ifdef _WIN32
 	fd_set fds;
 	FD_ZERO( &fds );
 	FD_SET( sock, &fds );
@@ -161,10 +163,19 @@ bool datawaiting( int sock )
 	if (r < 0)
 		BailOnSocketError( "select" );
 
-	if( FD_ISSET( sock, &fds ) )
-		return true;
-	else
-		return false;
+	return FD_ISSET( sock, &fds ) != 0;
+#else
+	struct pollfd pfd;
+	pfd.fd = sock;
+	pfd.events = POLLIN;
+	pfd.revents = 0;
+
+	int r = poll( &pfd, 1, 0 );
+	if (r < 0)
+		BailOnSocketError( "poll" );
+
+	return ( pfd.revents & POLLIN ) != 0;
+#endif
 }
 
 
@@ -931,6 +942,7 @@ bool Response::CheckClose()
 
 
 }	// end namespace happyhttp
+
 
 
 
